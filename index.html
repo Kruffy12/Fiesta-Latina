@@ -22,6 +22,10 @@
 *{box-sizing:border-box;margin:0}
 html,body{min-height:100%}
 html{scrollbar-gutter:stable} /* keep width constant when short tabs drop the scrollbar */
+/* No white gap when over-scrolling (iOS rubber-band): stop the bounce and paint the canvas blue */
+html{background:var(--blue-deep);overscroll-behavior:none;touch-action:manipulation} /* manipulation: no double-tap zoom on buttons */
+body{overscroll-behavior:none}
+img{-webkit-touch-callout:none;-webkit-user-drag:none} /* no "Save image" menu on long-press at the kiosk */
 body{
   font-family:Karla,system-ui,sans-serif; color:var(--ink); background:var(--blue);
   background-image:
@@ -199,7 +203,7 @@ function detail(i, tab) {
     app.querySelector(".panel").innerHTML = panels[tab];
     return;
   }
-  const oldImg = app.querySelector(".hero .photo img"); // kept underneath so the switch crossfades instead of flashing
+  const oldImg = app.querySelector(".hero .photo img:last-of-type"); // top photo, kept underneath so the switch crossfades
   app.dataset.dish = d.id;
   app.innerHTML = `<section class="detail">
     <nav class="side" aria-label="Dishes">
@@ -227,15 +231,19 @@ function detail(i, tab) {
     </div></section>`;
   if (oldImg) {
     const box = app.querySelector(".hero .photo"), img = box.querySelector("img");
+    oldImg.classList.remove("fade-in"); // re-inserting would restart its fade and flash on fast taps
     box.prepend(oldImg);
     img.classList.add("fade-in");
     img.addEventListener("animationend", () => oldImg.remove(), { once: true });
+    img.addEventListener("error", () => oldImg.remove(), { once: true }); // missing photo: never show the previous dish
+    if (getComputedStyle(img).animationName === "none") oldImg.remove(); // Reduce Motion: no fade, swap at once
   }
 }
 
 // Routing via hash so it works on GitHub Pages and the iPad back gesture works.
 function route(keepScroll) {
   const wasDetail = !!app.dataset.dish;
+  if (lightbox.open) lightbox.close(); // back gesture must not leave the photo modal over another page
   const [id, tab = "about"] = location.hash.slice(1).split("/");
   const i = DISHES.findIndex(d => d.id === id);
   if (updateReady && i < 0) return location.reload();
@@ -247,7 +255,7 @@ app.addEventListener("click", e => {
   const go = e.target.closest("[data-go]");
   if (go) { go_(go.dataset.go); return; }
   const z = e.target.closest("[data-zoom]");
-  if (z) { const d = DISHES.find(x => x.id === z.dataset.zoom), im = lightbox.querySelector("img"); im.src = `images/${d.id}.jpg`; im.alt = d.name; lightbox.querySelector("p").textContent = `${d.name}: ${d.sub}`; lightbox.showModal(); return; }
+  if (z && !z.querySelector(".missing")) { const d = DISHES.find(x => x.id === z.dataset.zoom), im = lightbox.querySelector("img"); im.src = `images/${d.id}.jpg`; im.alt = d.name; lightbox.querySelector("p").textContent = `${d.name}: ${d.sub}`; lightbox.showModal(); return; }
   const t = e.target.closest("[data-tab]");
   if (t) history.replaceState(null, "", "#" + location.hash.slice(1).split("/")[0] + "/" + t.dataset.tab), route(true);
 });

@@ -5,6 +5,7 @@ const DISHES = [
     name: "Gallo Pinto",
     sub: "Rice & red beans, fried together",
     tag: "Plato nacional",
+    tagEn: "National dish",
     meta: ["Savory", "Vegetarian", "Breakfast staple"],
     description:
       "Nicaragua's national dish: white rice and small red beans fried together with onion, sweet pepper and garlic until every grain of rice turns a toasty reddish-brown. The beans' cooking broth is what gives it its color and flavor. It is eaten morning, noon and night, usually with fried sweet plantains (maduros), a fried egg, fresh cuajada cheese and a warm corn tortilla.",
@@ -39,6 +40,7 @@ const DISHES = [
     name: "Salpicón",
     sub: "Minced beef with sour orange & herbs",
     tag: "Comida casera",
+    tagEn: "Home cooking",
     meta: ["Savory", "Served cool", "Family meal"],
     description:
       "A fresh, zesty dish of beef that is boiled until tender, chopped very finely, then tossed with diced onion, sweet pepper and herbs and soaked in the juice of sour orange (naranja agria) or lime. It is served cool or at room temperature, usually alongside white rice and crispy fried green plantain slices (tajadas).",
@@ -74,6 +76,7 @@ const DISHES = [
     name: "Pinolillo",
     sub: "Toasted corn & cacao drink",
     tag: "Bebida típica",
+    tagEn: "Traditional drink",
     meta: ["Drink", "Served cold", "Corn & cacao"],
     description:
       "A thick, earthy and refreshing drink made from corn and cacao that are toasted and ground into a fine powder with cinnamon and clove. The powder is stirred into cold water or milk and sweetened with sugar. It tastes like a cross between hot chocolate and toasted cornbread, and is traditionally sipped from a jícara, a cup carved from a dried gourd.",
@@ -106,6 +109,7 @@ const DISHES = [
     name: "Cajetas de Coco",
     sub: "Sweet coconut candies",
     tag: "Dulce tradicional",
+    tagEn: "Traditional sweet",
     meta: ["Sweet", "Dessert", "Coconut"],
     description:
       "Chewy, golden coconut sweets made by slowly cooking freshly grated coconut with sugar, milk and a stick of cinnamon until it turns thick and sticky. The mixture is then rolled into small balls or cut into squares. They are sweet, a little caramel-like, and full of real coconut texture.",
@@ -138,6 +142,7 @@ const DISHES = [
     name: "Pío Quinto",
     sub: "Custard-soaked sponge cake (alcohol-free)",
     tag: "Postre navideño",
+    tagEn: "Christmas dessert",
     meta: ["Sweet", "Alcohol-free", "Dessert"],
     description:
       "Soft sponge cake soaked in a sweet cinnamon syrup, covered in a thick, creamy custard (manjar) and dusted with ground cinnamon, often with raisins or prunes on top. The traditional syrup is made with rum; ours is the virgin version, using extra vanilla and cinnamon in place of the rum so everyone can enjoy it.",
@@ -170,4 +175,9 @@ const DISHES = [
 // Photo slot: shows images/<id>.jpg once it exists, otherwise a labelled placeholder.
 function photo(d) {
   return `<div class="photo"><span>Photo<br>images/${d.id}.jpg</span><img src="images/${d.id}.jpg" alt="${d.name}" decoding="sync" onerror="this.parentNode.classList.add('missing');this.remove()"></div>`;
+}
+
+// Spanish tag with its English translation beside it.
+function tags(d) {
+  return `<span class="tags"><span class="tag">${d.tag}</span><span class="tag en">${d.tagEn}</span></span>`;
 }

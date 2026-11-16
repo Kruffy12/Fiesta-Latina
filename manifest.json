@@ -1,0 +1,15 @@
+{
+  "name": "Fiesta Latina Menu",
+  "short_name": "Fiesta Latina",
+  "description": "Belize High School Fiesta Latina: flavors of Nicaragua.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1a7cc4",
+  "theme_color": "#1a7cc4",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

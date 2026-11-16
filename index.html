@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a7cc4">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="icon" href="icon-512.png">
 <title>Fiesta Latina Menu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +61,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tag{display:inline-block;align-self:flex-start;background:#e7f2fc;color:var(--blue-deep);font-weight:700;font-size:13px;padding:5px 11px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase}
 .more{margin-top:auto;padding-top:10px;color:var(--blue-deep);font-weight:800;display:flex;align-items:center;gap:6px}
 .hint{color:#e3f0fb;text-align:center;margin-top:22px;font-size:16px}
-.print-link{color:#fff;font-weight:700}
 
 /* Detail */
 .detail{flex:1;display:grid;grid-template-columns:230px 1fr;background:var(--white);border-radius:34px;box-shadow:var(--shadow);overflow:hidden}
@@ -69,7 +71,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .side-item span{color:var(--muted);font-weight:500}
 .side-item[aria-current="true"]{background:var(--navy);color:#fff}
 .side-item[aria-current="true"] span{color:#bcd6f0}
-.side .print-btn{margin-top:auto;margin-inline:22px;min-height:48px;border:2px solid var(--line);border-radius:14px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
 
 .content{display:grid;grid-template-columns:minmax(260px,40%) 1fr;gap:28px;padding:30px 34px;align-items:stretch}
 .hero{text-align:center;display:flex;flex-direction:column}
@@ -105,7 +106,7 @@ ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px
   .card:nth-child(-n+2){grid-column:span 3}
   .detail{grid-template-columns:1fr}
   .side{flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line);padding:10px}
-  .side-label,.side .print-btn{display:none}
+  .side-label{display:none}
   .back{padding:0 14px}
   .side-item{border:0;border-radius:14px;padding:0 16px;min-height:48px}
   .side-item span{display:none}
@@ -134,8 +135,7 @@ ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px
 const app = document.getElementById("app");
 const ICON = {
   back:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
-  next:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>',
-  print:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>'
+  next:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>'
 };
 const TABS = [["about","Description"],["culture","Culture"],["recipe","Recipe"]];
 const pad = i => String(i + 1).padStart(2, "0");
@@ -150,7 +150,7 @@ function home() {
       <span class="tag">${d.tag}</span>
       <span class="more">Tap to learn more ${ICON.next}</span>
     </button>`).join("")}</div>
-    <p class="hint">Tap any dish to see its story, cultural importance and recipe. · <a class="print-link" href="print.html">Printable menu</a></p>`;
+    <p class="hint">Tap any dish to see its story, cultural importance and recipe.</p>`;
 }
 
 function detail(i, tab) {
@@ -168,7 +168,6 @@ function detail(i, tab) {
       <button class="back" data-go="">${ICON.back} Menu</button>
       <div class="side-label">Platos</div>
       ${DISHES.map((x, j) => `<button class="side-item" data-go="${x.id}" aria-current="${j === i}">${x.name}<span>${pad(j)}</span></button>`).join("")}
-      <a class="print-btn" href="print.html">${ICON.print} Print menu</a>
     </nav>
     <div class="content">
       <div class="hero">
@@ -217,6 +216,7 @@ app.addEventListener("touchend", e => {
 function go_(id) { history.pushState(null, "", id ? "#" + id : location.pathname); route(); }
 addEventListener("popstate", route);
 route();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
 </body>
 </html>

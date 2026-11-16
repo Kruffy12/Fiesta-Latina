@@ -39,8 +39,6 @@ body{
 header{text-align:center;color:var(--white);padding:4px 16px 8px}
 .kicker{font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:15px}
 h1{font-family:"Kaushan Script",cursive;font-weight:400;font-size:clamp(38px,9vw,104px);line-height:1;text-shadow:0 4px 0 rgba(6,40,80,.25);margin:4px 0}
-.sub{font-size:19px;font-weight:500}
-.sub b{color:#ffe1a8}
 main{flex:1;display:flex;flex-direction:column;width:100%;max-width:1400px;margin:0 auto;padding:16px 24px 24px}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
@@ -126,14 +124,15 @@ h1{animation:bob 3.4s ease-in-out infinite}
 .more svg{animation:nudge 1.4s ease-in-out infinite}
 @keyframes drift{to{background-position-x:80px}}
 @keyframes bob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-6px)}}
+.photo img.fade-in{animation:fadein .4s ease} /* new dish photo fades in over the old one */
+@keyframes fadein{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(40px) scale(.96)}}
 @keyframes kenburns{to{transform:scale(1.1)}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(242,163,58,0)}50%{box-shadow:0 0 0 5px rgba(242,163,58,.75)}}
 @keyframes nudge{50%{transform:translateX(6px)}}
 .compact header{display:flex;justify-content:center;align-items:baseline;gap:14px;padding-bottom:0}
-.compact h1{font-size:44px;animation:none}
-.compact .bunting{animation:none}
-.compact .kicker,.compact .sub{display:none}
+.compact h1{font-size:44px}
+.compact .kicker{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -142,7 +141,6 @@ h1{animation:bob 3.4s ease-in-out infinite}
 <header>
   <div class="kicker">Belize High School Senior 1 presents</div>
   <h1>Nicaraguan Cuisine</h1>
-  <div class="sub">Sabores de <b>Nicaragua</b> · Flavors of Nicaragua</div>
 </header>
 <main id="app"></main>
 
@@ -188,6 +186,7 @@ function detail(i, tab) {
     app.querySelector(".panel").innerHTML = panels[tab];
     return;
   }
+  const oldImg = app.querySelector(".hero .photo img"); // kept underneath so the switch crossfades instead of flashing
   app.dataset.dish = d.id;
   app.innerHTML = `<section class="detail">
     <nav class="side" aria-label="Dishes">
@@ -213,16 +212,23 @@ function detail(i, tab) {
         <div class="panel" role="tabpanel">${panels[tab]}</div>
       </div>
     </div></section>`;
+  if (oldImg) {
+    const box = app.querySelector(".hero .photo"), img = box.querySelector("img");
+    box.prepend(oldImg);
+    img.classList.add("fade-in");
+    img.addEventListener("animationend", () => oldImg.remove(), { once: true });
+  }
 }
 
 // Routing via hash so it works on GitHub Pages and the iPad back gesture works.
 function route(keepScroll) {
+  const wasDetail = !!app.dataset.dish;
   const [id, tab = "about"] = location.hash.slice(1).split("/");
   const i = DISHES.findIndex(d => d.id === id);
   if (updateReady && i < 0) return location.reload();
   i < 0 ? home() : detail(i, TABS.some(t => t[0] === tab) ? tab : "about");
   document.body.classList.toggle("compact", i >= 0);
-  if (keepScroll !== true) window.scrollTo(0, 0);
+  if (keepScroll !== true && !(wasDetail && i >= 0)) window.scrollTo(0, 0); // dish-to-dish keeps the scroll position
 }
 app.addEventListener("click", e => {
   const go = e.target.closest("[data-go]");

@@ -22,7 +22,6 @@ body{font-family:Karla,system-ui,sans-serif;color:var(--ink);background:#c9d6e3}
 .bunting{height:.36in;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='46'%3E%3Cpath d='M0 4Q40 12 80 4' stroke='%23f2a33a' stroke-width='3' fill='none'/%3E%3Cpath d='M4 6L20 42L36 8Z' fill='white'/%3E%3Cpath d='M44 8L60 42L76 6Z' fill='%230b5fae'/%3E%3C/svg%3E") repeat-x;background-size:auto 100%}
 .kicker{font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:11pt}
 h1{font-family:"Kaushan Script",cursive;font-weight:400;font-size:36pt;line-height:1.1;text-shadow:0 3px 0 rgba(6,40,80,.25)}
-.sub{font-size:11.5pt;font-weight:500}
 .dishes{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,auto);align-content:stretch;gap:.1in;padding:.13in .35in .1in}
 .dish{border:2px solid var(--line);border-radius:.16in;padding:.12in .16in;display:flex;flex-direction:column}
 .head{display:flex;align-items:center;gap:.14in;margin-bottom:.08in}
@@ -42,6 +41,10 @@ h2{font-family:"Playfair Display",serif;font-size:17pt;line-height:1.05;color:va
 .know b{color:var(--blue-deep)}
 footer{background:var(--navy);color:#fff;text-align:center;padding:.12in;font-size:10pt;font-weight:500}
 footer b{color:#ffe1a8}
+@media screen{.bunting{animation:drift 6s linear infinite}h1{animation:bob 3.4s ease-in-out infinite}}
+@keyframes drift{to{background-position-x:60.1px}} /* one bunting tile at .36in tall */
+@keyframes bob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 @media print{body{background:#fff}.toolbar{display:none}.sheet{margin:0;box-shadow:none}}
 </style>
 </head>
@@ -52,7 +55,6 @@ footer b{color:#ffe1a8}
     <div class="bunting" aria-hidden="true"></div>
     <div class="kicker">Belize High School Senior 1 presents</div>
     <h1>Nicaraguan Cuisine</h1>
-    <div class="sub">Sabores de Nicaragua · Flavors of Nicaragua</div>
   </div>
   <section class="dishes" id="dishes"></section>
   <footer>Full recipes and the story of each dish are on the iPad menu · <b>¡Buen provecho!</b></footer>

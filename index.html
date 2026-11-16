@@ -86,7 +86,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .tabs{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:5px;gap:4px}
 .tab{flex:1;min-height:50px;border-radius:14px;font-weight:800;font-size:17px;color:var(--muted);transition:background .2s,color .2s}
 .tab[aria-selected="true"]{background:var(--blue-deep);color:#fff;box-shadow:0 4px 12px rgba(11,95,174,.35)}
-.panel{padding:24px 4px 4px;font-size:19px;line-height:1.6;animation:fade .25s ease}
+.panel{padding:24px 4px 4px;font-size:19px;line-height:1.6}
 .panel h3{font-family:"Playfair Display",serif;font-size:24px;margin:4px 0 12px;color:var(--navy)}
 .panel p+p{margin-top:14px}
 .quick{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
@@ -97,7 +97,6 @@ ul.ing li{margin:4px 0}
 ol.steps{list-style:none;padding:0;counter-reset:s}
 ol.steps li{counter-increment:s;position:relative;padding-left:48px;margin:12px 0}
 ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:800;display:grid;place-items:center;font-size:16px}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* iPad portrait & smaller */
 @media (max-width:1000px){
@@ -119,10 +118,9 @@ ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:34px
 .bunting{animation:drift 6s linear infinite}
 h1{animation:bob 3.4s ease-in-out infinite}
 .card{animation:rise .7s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i) * 110ms)}
-.card .photo img,.hero .photo img{animation:kenburns 16s ease-in-out infinite alternate}
+.card .photo img{animation:kenburns 16s ease-in-out infinite alternate}
 .card .photo{animation:glow 4s ease-in-out infinite;animation-delay:calc(var(--i) * .8s)}
 .more svg{animation:nudge 1.4s ease-in-out infinite}
-.hero{animation:rise .5s cubic-bezier(.2,.8,.2,1) backwards}
 @keyframes drift{to{background-position-x:80px}}
 @keyframes bob{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-6px)}}
 @keyframes rise{from{opacity:0;transform:translateY(40px) scale(.96)}}
@@ -131,6 +129,7 @@ h1{animation:bob 3.4s ease-in-out infinite}
 @keyframes nudge{50%{transform:translateX(6px)}}
 .compact header{display:flex;justify-content:center;align-items:baseline;gap:14px;padding-bottom:0}
 .compact h1{font-size:44px;animation:none}
+.compact .bunting{animation:none}
 .compact .kicker,.compact .sub{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -138,7 +137,7 @@ h1{animation:bob 3.4s ease-in-out infinite}
 <body>
 <div class="bunting" aria-hidden="true"></div>
 <header>
-  <div class="kicker">Belize High School presents</div>
+  <div class="kicker">Belize High School Senior 1 presents Nicaraguan Cuisine</div>
   <h1>Fiesta Latina</h1>
   <div class="sub">Sabores de <b>Nicaragua</b> · Flavors of Nicaragua</div>
 </header>
@@ -207,6 +206,7 @@ function detail(i, tab) {
 function route(keepScroll) {
   const [id, tab = "about"] = location.hash.slice(1).split("/");
   const i = DISHES.findIndex(d => d.id === id);
+  if (updateReady && i < 0) return location.reload();
   i < 0 ? home() : detail(i, TABS.some(t => t[0] === tab) ? tab : "about");
   document.body.classList.toggle("compact", i >= 0);
   if (keepScroll !== true) window.scrollTo(0, 0);
@@ -228,9 +228,23 @@ app.addEventListener("touchend", e => {
   sx = null;
 });
 function go_(id) { history.pushState(null, "", id ? "#" + id : location.pathname); route(); }
+let stamp, updateReady = false; // set by checkVersion() below
 addEventListener("popstate", route);
 route();
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
+// Auto-update a menu left open: if the deployed site changes, reload next time it's on the home screen.
+// shortcut: only watches index.html's Last-Modified/ETag (GitHub Pages redeploys stamp every file), fine for this static site.
+async function checkVersion() {
+  try {
+    const r = await fetch("index.html", { method: "HEAD", cache: "no-store" });
+    const s = r.headers.get("last-modified") || r.headers.get("etag");
+    if (stamp && s && s !== stamp) updateReady = true;
+    stamp = stamp || s;
+    if (updateReady && !location.hash) location.reload();
+  } catch {} // offline: keep showing the cached menu
+}
+checkVersion();
+setInterval(checkVersion, 5 * 60 * 1000);
 </script>
 </body>
 </html>

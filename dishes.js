@@ -169,5 +169,5 @@ const DISHES = [
 
 // Photo slot: shows images/<id>.jpg once it exists, otherwise a labelled placeholder.
 function photo(d) {
-  return `<div class="photo"><span>Photo<br>images/${d.id}.jpg</span><img src="images/${d.id}.jpg" alt="${d.name}" onerror="this.remove()"></div>`;
+  return `<div class="photo"><span>Photo<br>images/${d.id}.jpg</span><img src="images/${d.id}.jpg" alt="${d.name}" decoding="sync" onerror="this.parentNode.classList.add('missing');this.remove()"></div>`;
 }
